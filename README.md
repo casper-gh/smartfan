@@ -7,7 +7,7 @@ While I am using the NodeMCU board, this <i>should</i> work on just about any ES
 
 Image Gallery: http://imgur.com/a/WZmPM
 
-
+Servo Shaft Couplers (the easiest way to connect your servo in-place of the blinds tilt gearbox and thus hide the servo, board, and cords in the blinds upper housing) can be found here: https://www.servocity.com/html/servo_to_shaft_couplers.html
 
 This is a fork of user casper-gh's smartfan code that can be found here: https://github.com/casper-gh/smartfan
 
