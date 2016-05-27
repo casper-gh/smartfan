@@ -5,7 +5,7 @@ This is my attempt to control window blinds in SmartThings with a NodeMCU ESP826
 
 While I am using the NodeMCU board, this <i>should</i> work on just about any ESP8266 based board...
 
-Image Gallery: http://imgur.com/a/WZmPW
+Image Gallery: http://imgur.com/a/WZmPM
 
 
 
