@@ -19,20 +19,10 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Generic HTTP Device - ESP8266 - Tower Fan", author: "JZ", namespace:"JZ") {
+	definition (name: "Generic HTTP Device - ESP8266 - Blinds", author: "hobbzey", namespace:"hobbzey") {
 		capability "Switch"
 		attribute "triggerswitch", "string"
-		attribute "oscswitch", "string"
-		attribute "timeradd", "string"
-		attribute "timerminus", "string"
-		attribute "speed", "string"
-		attribute "modeswitch", "string"
 		command "DeviceTrigger"
-		command "oscTrigger"
-		command "speedTrigger"
-		command "timerAddTrigger"
-		command "timerMinusTrigger"
-		command "modeTrigger"
 	}
 
 
@@ -54,30 +44,10 @@ metadata {
 	}
 
 	tiles {
-		standardTile("DeviceTrigger", "device.triggerswitch", width: 2, height: 2, canChangeIcon: true, canChangeBackground: true) {
-			state "triggeroff", label:'OFF' , action: "on", icon: "st.Appliances.appliances11", backgroundColor:"#ffffff", nextState: "trying"
-			state "triggeron", label: 'ON', action: "off", icon: "st.Appliances.appliances11", backgroundColor: "#79b821", nextState: "trying"
-			state "trying", label: 'TRYING', action: "", icon: "st.Appliances.appliances11", backgroundColor: "#FFAA33"
-		}
-		standardTile("oscTrigger", "device.oscswitch", width: 2, height: 2, canChangeIcon: true, canChangeBackground: true) {
-			state "default", label:'' , action: "oscTrigger", icon: "st.thermostat.fan-circulate", backgroundColor:"#8fff6c", nextState: "trying"
-			state "trying", label: 'TRYING', action: "", icon: "st.thermostat.fan-circulate", backgroundColor: "#FFAA33"
-		}
-		standardTile("speedTrigger", "device.speed", width: 1, height: 1, canChangeIcon: true, canChangeBackground: true, decoration: "flat") {
-			state "default", label:'Speed +' , action: "speedTrigger", icon: "st.Weather.weather1", backgroundColor:"#ff4c4c", nextState: "trying"
-			state "trying", label: 'TRYING', action: "", icon: "st.Weather.weather1", backgroundColor: "#FFAA33"
-		}    
-		standardTile("modeTrigger", "device.modeswitch", width: 1, height: 1, canChangeIcon: true, canChangeBackground: true, decoration: "flat") {
-			state "default", label:'MODE' , action: "modeTrigger", icon: "st.Weather.weather4", backgroundColor:"#03f4fb", nextState: "trying"
-			state "trying", label: 'TRYING', action: "", icon: "st.Weather.weather4", backgroundColor: "#FFAA33"
-		}
-		standardTile("timerAddTrigger", "device.timeradd", width: 1, height: 1, canChangeIcon: true, canChangeBackground: true, decoration: "flat") {
-			state "default", label:'Timer +', action: "timerAddTrigger", icon: "st.thermostat.thermostat-up", backgroundColor:"#fff400", nextState: "trying"
-			state "trying", label: 'TRYING', action: "", icon: "st.thermostat.thermostat-up", backgroundColor: "#FFAA33"
-		}
-		standardTile("timerMinusTrigger", "device.timerminus", width: 1, height: 1, canChangeIcon: true, canChangeBackground: true, decoration: "flat") {
-			state "default", label:'Timer -' , action: "timerMinusTrigger", icon: "st.thermostat.thermostat-down", backgroundColor:"#fff400", nextState: "trying"
-			state "trying", label: 'TRYING', action: "", icon: "st.thermostat.thermostat-down", backgroundColor: "#FFAA33"
+		standardTile("DeviceTrigger", "device.triggerswitch", width: 3, height: 3, canChangeIcon: true, canChangeBackground: true) {
+			state "triggeroff", label:'CLOSED' , action: "on", icon: "st.Home.home9", backgroundColor:"#ffffff", nextState: "trying"
+			state "triggeron", label: 'OPEN', action: "off", icon: "st.Home.home9", backgroundColor: "#79b821", nextState: "trying"
+			state "trying", label: 'TRYING', action: "", icon: "st.Home.home9", backgroundColor: "#FFAA33"
 		}
 		main "DeviceTrigger"
 		details(["DeviceTrigger", "oscTrigger", "modeTrigger", "speedTrigger", "timerAddTrigger", "timerMinusTrigger"])
@@ -85,42 +55,18 @@ metadata {
 }
 
 def on() {
-	log.debug "Triggered on!!!"
+	log.debug "Triggered OPEN!!!"
 	sendEvent(name: "triggerswitch", value: "triggeron", isStateChange: true)
-    state.fan = "on";
-	runCmd("fan=on")
+    state.blinds = "on";
+	runCmd("open")
 }
 def off() {
-	log.debug "Triggered off!!!"
+	log.debug "Triggered CLOSE!!!"
 	sendEvent(name: "triggerswitch", value: "triggeroff", isStateChange: true)
-    state.fan = "off";
-	runCmd("fan=power")
+    state.blinds = "off";
+	runCmd("close")
 }
-def oscTrigger() {
-	log.debug "OSC triggered!!!"
-    sendEvent(name: "oscswitch", value: "default", isStateChange: true)
-	runCmd("fan=osc")
-}
-def speedTrigger() {
-	log.debug "Add Speed!!!"
-    sendEvent(name: "speed", value: "default", isStateChange: true)
-	runCmd("fan=speed")
-}
-def timerAddTrigger() {
-	log.debug "Timer ++!!!"
-    sendEvent(name: "timeradd", value: "default", isStateChange: true)
-	runCmd("fan=timeradd")
-}
-def timerMinusTrigger() {
-	log.debug "Timer --!!!"
-    sendEvent(name: "timerminus", value: "default", isStateChange: true)
-	runCmd("fan=timerminus")
-}
-def modeTrigger() {
-	log.debug "Mode changed!!!"
-    sendEvent(name: "modeswitch", value: "default", isStateChange: true)
-	runCmd("fan=mode")
-}
+
 
 def runCmd(String varCommand) {
 	def host = DeviceIP
@@ -177,13 +123,13 @@ def runCmd(String varCommand) {
 def parse(String description) {
 	//log.debug "Parsing '${description}'"
 	def whichTile = ''	
-	log.debug "state.fan " + state.fan
+	log.debug "state.blinds " + state.blinds
 	
-    if (state.fan == "on") {
+    if (state.blinds == "on") {
     	//sendEvent(name: "triggerswitch", value: "triggergon", isStateChange: true)
         whichTile = 'mainon'
     }
-    if (state.fan == "off") {
+    if (state.blinds == "off") {
     	//sendEvent(name: "triggerswitch", value: "triggergoff", isStateChange: true)
         whichTile = 'mainoff'
     }
